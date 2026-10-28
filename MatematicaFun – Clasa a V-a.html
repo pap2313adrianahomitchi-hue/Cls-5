@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MatematicaFun – Clasa a V-a</title>
+<style>
+:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Trebuchet MS","Comic Sans MS",system-ui,sans-serif;background:linear-gradient(160deg,#fff3c4,#ffd6e8 45%,#cdeeff);color:#2b2350;min-height:100vh}
+header{text-align:center;padding:28px 16px 12px}
+h1{margin:0;font-size:clamp(28px,6vw,48px);color:#7b2ff7;text-shadow:3px 3px 0 #ffd23f}
+h1 span{display:inline-block;animation:bob 2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px) rotate(6deg)}}
+.sub{font-size:18px;margin:6px 0}
+.score{display:inline-block;background:#fff;border:3px solid #7b2ff7;border-radius:30px;padding:8px 18px;font-weight:bold;margin-top:8px}
+nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:10px}
+nav button{font:inherit;font-weight:bold;border:0;border-radius:16px;padding:10px 16px;cursor:pointer;color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.25);transition:transform .1s}
+nav button:hover{transform:translateY(-2px)}
+nav button.on{outline:4px solid #2b2350}
+.c1{background:#ff5d8f}.c2{background:#ff9f1c}.c3{background:#2ec4b6}.c4{background:#4361ee}
+main{max-width:860px;margin:0 auto;padding:10px 14px 30px}
+section{display:none;background:#fff;border-radius:24px;padding:20px;border:4px solid;box-shadow:0 8px 0 rgba(0,0,0,.12)}
+section.on{display:block;animation:pop .35s}
+@keyframes pop{from{transform:scale(.95);opacity:0}}
+#s1{border-color:#ff5d8f}#s2{border-color:#ff9f1c}#s3{border-color:#2ec4b6}#s4{border-color:#4361ee}
+h2{margin:0 0 8px;font-size:26px}
+.theory{background:#fff9db;border-radius:16px;padding:12px 16px;margin:10px 0;line-height:1.5}
+.steps{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.steps div{flex:1 1 150px;border-radius:14px;padding:10px;color:#fff;font-weight:bold;text-align:center}
+.game{background:#f3eefe;border-radius:18px;padding:16px;margin-top:14px}
+.q{font-size:21px;font-weight:bold;margin-bottom:12px;line-height:1.5}
+.ex{display:inline-block;background:#fff;border:3px dashed #7b2ff7;border-radius:12px;padding:4px 14px;font-size:26px;letter-spacing:1px}
+.ins{display:flex;flex-wrap:wrap;gap:10px}
+label{font-weight:bold}
+input{font:inherit;font-size:20px;width:120px;padding:8px;border:3px solid #7b2ff7;border-radius:12px;margin-left:6px;color:#2b2350;background:#fff}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btns button{font:inherit;font-weight:bold;border:0;border-radius:14px;padding:10px 14px;cursor:pointer;color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.ok{background:#2eb872}.hint{background:#ff9f1c}.nx{background:#7b2ff7}
+.fb{margin-top:12px;font-size:18px;font-weight:bold;line-height:1.5}
+.good{color:#1a8a4f}.bad{color:#d62839}.tip{color:#6b4e00;background:#fff3b0;border-radius:10px;padding:6px 10px;display:inline-block}
+footer{text-align:center;padding:18px 12px 30px;font-size:14px}
+.conf{position:fixed;top:-30px;font-size:28px;pointer-events:none;animation:fall 1.8s linear forwards;z-index:9}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+</style>
+</head>
+<body>
+<header>
+  <h1><span>🧮</span> MatematicaFun <span>🚀</span></h1>
+  <p class="sub">Matematică pentru clasa a V-a – învață jucându-te!</p>
+  <div class="score" id="score"></div>
+</header>
+<nav>
+  <button class="c1 on" data-t="s1">🔢 Ordinea operațiilor</button>
+  <button class="c2" data-t="s2">⚡ Puteri</button>
+  <button class="c3" data-t="s3">⏪ Mersul invers</button>
+  <button class="c4" data-t="s4">🍎 Reducerea la unitate</button>
+</nav>
+<main>
+<section id="s1" class="on">
+  <h2>🔢 Ordinea efectuării operațiilor</h2>
+  <div class="theory">Calculăm mereu în ordinea asta, ca la un joc cu nivele:
+    <div class="steps">
+      <div style="background:#ff5d8f">1️⃣ Parantezele ( ) [ ]</div>
+      <div style="background:#ff9f1c">2️⃣ Puterile aⁿ</div>
+      <div style="background:#2ec4b6">3️⃣ Înmulțirea × și împărțirea :</div>
+      <div style="background:#4361ee">4️⃣ Adunarea + și scăderea −</div>
+    </div>
+    Dacă operațiile sunt de același nivel, mergem de la stânga la dreapta. 💡 Exemplu: 2 + 3 × 4 = 2 + 12 = 14 (nu 20!).
+  </div>
+  <div class="game" id="g1"></div>
+</section>
+
+<section id="s2">
+  <h2>⚡ Puteri cu exponent natural</h2>
+  <div class="theory">aⁿ înseamnă a înmulțit cu el însuși de n ori.<br>
+    Exemplu: 3⁴ = 3 × 3 × 3 × 3 = 81. &nbsp;Atenție: 3⁴ <b>nu</b> este 3 × 4!<br>
+    Reguli de aur: a⁰ = 1 (a ≠ 0), a¹ = a, 1ⁿ = 1, 0ⁿ = 0 (n ≠ 0), 10ⁿ = 1 urmat de n zerouri.
+  </div>
+  <div class="game" id="g2"></div>
+</section>
+
+<section id="s3">
+  <h2>⏪ Metoda mersului invers</h2>
+  <div class="theory">Când știm <b>rezultatul final</b> și vrem numărul de la început, mergem de la coadă la cap și facem <b>operațiile inverse</b>:
+    <div class="steps">
+      <div style="background:#ff5d8f">+ devine −</div>
+      <div style="background:#ff9f1c">− devine +</div>
+      <div style="background:#2ec4b6">× devine :</div>
+      <div style="background:#4361ee">: devine ×</div>
+    </div>
+    Exemplu: Gândesc un număr, îl înmulțesc cu 3 și adun 4. Obțin 19. Invers: 19 − 4 = 15, apoi 15 : 3 = 5. ✅
+  </div>
+  <div class="game" id="g3"></div>
+</section>
+
+<section id="s4">
+  <h2>🍎 Metoda reducerii la unitate</h2>
+  <div class="theory">Pașii magici:<br>
+    1️⃣ Aflăm cât înseamnă <b>o singură unitate</b> (împărțim).<br>
+    2️⃣ Aflăm cât înseamnă <b>câte unități cerem</b> (înmulțim).<br>
+    Exemplu: 4 caiete costă 20 lei. Un caiet costă 20 : 4 = 5 lei, deci 7 caiete costă 7 × 5 = 35 lei. 🛒
+  </div>
+  <div class="game" id="g4"></div>
+</section>
+</main>
+<footer>
+  © 2026 Homițchi Adriana – Impact Class. Toate drepturile rezervate. Conținutul, exercițiile și designul acestui site sunt protejate de drepturile de autor și nu pot fi copiate sau redistribuite fără acord scris.
+</footer>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const r=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+let score=0;
+try{score=+localStorage.getItem("mf")||0}catch(e){}
+function lvl(){return score<50?"🐣 Începător":score<150?"🧭 Explorator":score<300?"🏆 Campion":"👑 Maestru"}
+function showScore(){$("#score").textContent="⭐ "+score+" puncte · "+lvl()}
+function add(n){score+=n;try{localStorage.setItem("mf",score)}catch(e){}showScore()}
+function confetti(){const e=["🎉","⭐","✨","🎈","🌟","🍭"];for(let i=0;i<22;i++){const d=document.createElement("div");d.className="conf";d.textContent=e[r(0,5)];d.style.left=r(0,95)+"vw";d.style.animationDelay=(Math.random()*.6)+"s";document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}}
+showScore();
+$$("nav button").forEach(b=>b.onclick=()=>{$$("nav button").forEach(x=>x.classList.remove("on"));b.classList.add("on");$$("section").forEach(s=>s.classList.remove("on"));$("#"+b.dataset.t).classList.add("on")});
+
+function game(id,gen){
+  const el=$("#"+id);let cur,done;
+  function next(){
+    cur=gen();done=false;
+    el.innerHTML=`<div class="q">${cur.q}</div><div class="ins">${cur.labels.map((l,i)=>`<label>${l}<input type="number" inputmode="numeric" data-i="${i}"></label>`).join("")}</div>
+    <div class="btns"><button class="ok">Verifică ✔</button><button class="hint">Indiciu 💡</button><button class="nx">Alt exercițiu 🔄</button></div><div class="fb"></div>`;
+    const fb=el.querySelector(".fb");
+    el.querySelector(".ok").onclick=()=>{
+      const v=[...el.querySelectorAll("input")].map(i=>i.value);
+      if(v.some(x=>x==="")){fb.innerHTML='<span class="bad">Completează toate căsuțele! ✏️</span>';return}
+      if(v.every((x,i)=>+x===cur.ans[i])){
+        fb.innerHTML='<span class="good">Bravo! Corect! 🎉 '+(done?"":"+10 puncte")+'</span><br>'+cur.expl;
+        if(!done){add(10);confetti();done=true}
+      }else fb.innerHTML='<span class="bad">Aproape! Mai încearcă 🤔 Folosește Indiciul.</span>';
+    };
+    el.querySelector(".hint").onclick=()=>fb.innerHTML='<span class="tip">💡 '+cur.hint+'</span>';
+    el.querySelector(".nx").onclick=next;
+  }
+  next();
+}
+
+// 1. Ordinea operatiilor
+game("g1",()=>{
+  const t=r(1,5);let a=r(2,9),b=r(2,9),c=r(2,9),d,txt,val,expl;
+  if(t==1){txt=`${a} + ${b} × ${c}`;val=a+b*c;expl=`${b} × ${c} = ${b*c}, apoi ${a} + ${b*c} = ${val}`}
+  else if(t==2){txt=`(${a} + ${b}) × ${c}`;val=(a+b)*c;expl=`Mai întâi paranteza: ${a+b}, apoi ${a+b} × ${c} = ${val}`}
+  else if(t==3){c=r(1,a+b*b-1);txt=`${a} + ${b}² − ${c}`;val=a+b*b-c;expl=`${b}² = ${b*b}, apoi ${a} + ${b*b} − ${c} = ${val}`}
+  else if(t==4){txt=`${a*b} : ${b} + ${c}²`;val=a+c*c;expl=`${a*b} : ${b} = ${a}; ${c}² = ${c*c}; ${a} + ${c*c} = ${val}`}
+  else{d=r(1,5);c=d+r(1,5);txt=`${a} + ${b} × (${c} − ${d})`;val=a+b*(c-d);expl=`Paranteza: ${c-d}; apoi ${b} × ${c-d} = ${b*(c-d)}; în final ${a} + ${b*(c-d)} = ${val}`}
+  return{q:`Calculează:<br><span class="ex">${txt}</span>`,labels:["Rezultat ="],ans:[val],hint:"Începe cu paranteza, apoi puterile, apoi × și :, la final + și −.",expl}
+});
+
+// 2. Puteri
+game("g2",()=>{
+  const t=r(1,3);let a,n,q,v,e;
+  if(t==1){a=r(2,9);n=r(2,4);if(a>5&&n>3)n=3;v=a**n;q=`<span class="ex">${a}<sup>${n}</sup></span>`;e=`${Array(n).fill(a).join(" × ")} = ${v}`}
+  else if(t==2){n=r(2,6);v=10**n;a=10;q=`<span class="ex">10<sup>${n}</sup></span> (1 urmat de câte zerouri?)`;return{q:`Câte <b>zerouri</b> are numărul ${q.split(" ")[0].replace(/<\/?span[^>]*>/g,"")} 🤔<br><span class="ex">10<sup>${n}</sup></span>`,labels:["Zerouri ="],ans:[n],hint:"Exponentul îți spune câte zerouri are 10ⁿ.",expl:`10<sup>${n}</sup> = ${v.toLocaleString("ro-RO")} are ${n} zerouri.`}}
+  else{a=r(2,5);n=r(2,3);const m=r(1,3);v=a**n+m**2;q=`<span class="ex">${a}<sup>${n}</sup> + ${m}²</span>`;e=`${a**n} + ${m*m} = ${v}`}
+  return{q:`Calculează: ${q}`,labels:["Rezultat ="],ans:[v],hint:"aⁿ = a înmulțit cu el însuși de n ori. Nu înmulți baza cu exponentul!",expl:e}
+});
+
+// 3. Mersul invers
+game("g3",()=>{
+  const x=r(2,20);let cur=x;const parts=[];
+  for(let i=0;i<3;i++){
+    const o=r(0,3);
+    if(o==0){const k=r(2,12);parts.push(`îl adun cu ${k}`);cur+=k}
+    else if(o==1&&cur>3){const k=r(1,cur-1);parts.push(`scad ${k}`);cur-=k}
+    else if(o==2){const k=r(2,5);parts.push(`îl înmulțesc cu ${k}`);cur*=k}
+    else{const dv=[2,3,4,5].filter(d=>cur%d==0&&cur>d);if(dv.length){const k=dv[r(0,dv.length-1)];parts.push(`îl împart la ${k}`);cur/=k}else{parts.push(`îl adun cu 2`);cur+=2}}
+  }
+  return{q:`🤔 Gândesc un număr: ${parts.join(", apoi ")}. Obțin <span class="ex">${cur}</span>. Ce număr am gândit?`,labels:["Numărul ="],ans:[x],hint:"Pornește de la rezultat și parcurge pașii de la ultimul la primul, cu operația inversă (+ ↔ −, × ↔ :).",expl:`Verificare: dacă începi cu ${x} și faci toți pașii, obții ${cur}. ✅`}
+});
+
+// 4. Reducerea la unitate
+game("g4",()=>{
+  const it=[["caiete","lei","🗒️"],["creioane","lei","✏️"],["kilograme de mere","lei","🍎"],["bilete","lei","🎟️"],["baloane","lei","🎈"]][r(0,4)];
+  const p=r(2,15),n=r(3,9);let m=r(2,12);if(m==n)m++;
+  return{q:`${it[2]} ${n} ${it[0]} costă ${n*p} ${it[1]}. Cât costă ${m} ${it[0]}?`,labels:["1 singur costă","Cele "+m+" costă"],ans:[p,p*m],hint:`Întâi împarte ${n*p} : ${n} ca să afli prețul pe unitate, apoi înmulțește cu ${m}.`,expl:`${n*p} : ${n} = ${p} lei pentru unul; ${m} × ${p} = ${p*m} lei.`}
+});
+</script>
+</body>
+</html>
